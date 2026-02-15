@@ -1,0 +1,73 @@
+<svg width="1280" height="640" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1d29;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#252833;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bg-gradient)"/>
+
+  <!-- Left side content -->
+  <g id="left-content">
+    <!-- Title -->
+    <text x="80" y="140" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#e0e0e0">
+      Bareos MCP Server
+    </text>
+
+    <!-- Underline -->
+    <line x1="80" y1="160" x2="580" y2="160" stroke="#4a9eff" stroke-width="3"/>
+
+    <!-- Tagline -->
+    <text x="80" y="240" font-family="Arial, sans-serif" font-size="36" fill="#b0b0b0">
+      Monitor Bareos backups with AI
+    </text>
+
+    <!-- Features header -->
+    <text x="80" y="320" font-family="Arial, sans-serif" font-size="28" fill="#e0e0e0">
+      Read-only operations for:
+    </text>
+
+    <!-- Feature list -->
+    <text x="80" y="370" font-family="Arial, sans-serif" font-size="24" fill="#b0b0b0">
+      <tspan x="100" dy="0">• Jobs &amp; logs</tspan>
+      <tspan x="100" dy="40">• Clients &amp; filesets</tspan>
+      <tspan x="100" dy="40">• Storage &amp; volumes</tspan>
+    </text>
+
+    <!-- License -->
+    <text x="80" y="560" font-family="Arial, sans-serif" font-size="22" fill="#888888">
+      MPL-2.0
+    </text>
+  </g>
+
+  <!-- Right side - Terminal mockup -->
+  <g id="terminal-mockup">
+    <!-- Terminal window -->
+    <rect x="720" y="160" width="480" height="340" rx="8" fill="#1e1e1e" stroke="#3a3a3a" stroke-width="2"/>
+
+    <!-- Terminal header -->
+    <rect x="720" y="160" width="480" height="40" rx="8" fill="#2d2d2d"/>
+    <circle cx="740" cy="180" r="6" fill="#ff5f56"/>
+    <circle cx="760" cy="180" r="6" fill="#ffbd2e"/>
+    <circle cx="780" cy="180" r="6" fill="#27c93f"/>
+
+    <!-- Terminal content -->
+    <text x="740" y="240" font-family="'Courier New', monospace" font-size="18" fill="#50fa7b">
+      $ <tspan fill="#e0e0e0">"Show me failed backups"</tspan>
+    </text>
+
+    <text x="740" y="280" font-family="'Courier New', monospace" font-size="16" fill="#e0e0e0">
+      <tspan x="740" dy="0">Job ID: 12345</tspan>
+      <tspan x="740" dy="24">Status: <tspan fill="#ff5555">Error</tspan></tspan>
+      <tspan x="740" dy="24">Client: web-server-01</tspan>
+      <tspan x="740" dy="24">Files: 45,231</tspan>
+      <tspan x="740" dy="24">Bytes: 2.3 GB</tspan>
+    </text>
+
+    <text x="740" y="450" font-family="'Courier New', monospace" font-size="18" fill="#6272a4">
+      ...
+    </text>
+  </g>
+</svg>
