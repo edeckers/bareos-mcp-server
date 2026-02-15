@@ -5,6 +5,18 @@
 
 A Model Context Protocol (MCP) server for [Bareos backup system](https://github.com/bareos/bareos), providing read-only operations for monitoring and querying backup infrastructure.
 
+## Quick Start
+
+Once configured, ask your AI assistant naturally about your backups:
+
+```
+"Show me the last 10 backup jobs"
+"Are there any failed backups today?"
+"What's the status of job 12345?"
+"How much storage is left in the Full pool?"
+"List all volumes ready for pruning"
+```
+
 ## Features
 
 ### Read-Only Operations
@@ -126,7 +138,7 @@ cd your-project
 claude
 ```
 
-Then ask Claude naturally:
+Example queries:
 - "Show me the last 10 backup jobs"
 - "What's the status of job 12345?"
 - "List all Bareos clients"
@@ -202,4 +214,5 @@ ssh -v your-host
 
 ## License
 
-Mozilla Public License 2.0 - see LICENSE file for details
+[MPL-2.0](LICENSE)
+
