@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
-use tokio::process::Command;
 use tokio::io::AsyncWriteExt;
+use tokio::process::Command;
 
 pub struct BareosClient {
     bconsole_path: String,
@@ -34,7 +34,10 @@ impl BareosClient {
         stdin.write_all(b"quit\n").await?;
         drop(stdin);
 
-        let output = child.wait_with_output().await.context("Failed to read bconsole output")?;
+        let output = child
+            .wait_with_output()
+            .await
+            .context("Failed to read bconsole output")?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
@@ -45,15 +48,18 @@ impl BareosClient {
     }
 
     pub async fn list_jobs(&self, limit: usize) -> Result<String> {
-        self.execute_command(&format!("list jobs last={}", limit)).await
+        self.execute_command(&format!("list jobs last={}", limit))
+            .await
     }
 
     pub async fn get_job_status(&self, job_id: &str) -> Result<String> {
-        self.execute_command(&format!("list jobid={}", job_id)).await
+        self.execute_command(&format!("list jobid={}", job_id))
+            .await
     }
 
     pub async fn get_job_log(&self, job_id: &str) -> Result<String> {
-        self.execute_command(&format!("list joblog jobid={}", job_id)).await
+        self.execute_command(&format!("list joblog jobid={}", job_id))
+            .await
     }
 
     pub async fn list_clients(&self) -> Result<String> {
