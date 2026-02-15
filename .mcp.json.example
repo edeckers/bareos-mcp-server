@@ -1,0 +1,9 @@
+{
+  "bareos": {
+    "command": "/path/to/bareos-mcp-server/target/release/bareos-mcp-server",
+    "args": [],
+    "env": {
+      "PATH": "/path/to/bareos-mcp-server:${PATH}"
+    }
+  }
+}

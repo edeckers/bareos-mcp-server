@@ -1,0 +1,18 @@
+.*
+!.mcp.json.example
+!.gitignore
+!.github/
+!.releaserc.json
+
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+
+# IDE
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db

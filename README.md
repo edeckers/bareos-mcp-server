@@ -1,0 +1,205 @@
+# Bareos MCP Server
+
+[![Release](https://github.com/edeckers/bareos-mcp-server/actions/workflows/release.yml/badge.svg)](https://github.com/edeckers/bareos-mcp-server/actions/workflows/release.yml)
+[![License](https://img.shields.io/badge/License-MPL--2.0-blue.svg)](https://opensource.org/licenses/MPL-2.0)
+
+A Model Context Protocol (MCP) server for [Bareos backup system](https://github.com/bareos/bareos), providing read-only operations for monitoring and querying backup infrastructure.
+
+## Features
+
+### Read-Only Operations
+
+- **Jobs**: List recent jobs, get detailed status, view job logs
+- **Clients**: List all Bareos file daemon clients
+- **Filesets**: List configured backup filesets
+- **Storage**: List pools and volumes with capacity info
+
+All operations are read-only by design for safety in production environments.
+
+## Prerequisites
+
+- **Rust 1.70+** - For building the server
+- **Bareos Director** - With bconsole access
+- **bconsole** - Command-line interface to Bareos Director
+
+## Installation
+
+### 1. Clone and Build
+
+```bash
+git clone https://github.com/edeckers/bareos-mcp-server.git
+cd bareos-mcp-server
+cargo build --release
+```
+
+The binary will be at: `target/release/bareos-mcp-server`
+
+### 2. Configure bconsole Access
+
+The MCP server calls `bconsole` from your PATH. You have several options:
+
+#### Option A: Local bconsole (Direct Access)
+
+If bconsole is installed locally and you have access:
+
+```bash
+# Test that bconsole works
+bconsole -c /etc/bareos/bconsole.conf
+```
+
+No additional setup needed - the server will use bconsole directly.
+
+#### Option B: Remote Bareos via SSH
+
+If your Bareos Director is on a remote host, create a wrapper script:
+
+```bash
+# Copy the example
+cp bconsole.example.sh bconsole
+chmod +x bconsole
+
+# Edit bconsole and set your hostname
+vim bconsole
+```
+
+Example wrapper content:
+```bash
+#!/usr/bin/env bash
+ssh your-bareos-host "sudo bconsole $*"
+```
+
+Add the wrapper directory to your PATH or reference it in the MCP config.
+
+#### Option C: Docker/Container Setup
+
+Run bconsole in a container that has network access to your Bareos Director.
+
+### 3. Configure MCP Client
+
+#### For Claude Code (CLI)
+
+Create `.mcp.json` in your project directory:
+
+```bash
+cp .mcp.json.example .mcp.json
+# Edit with your paths
+vim .mcp.json
+```
+
+Example config:
+```json
+{
+  "bareos": {
+    "command": "/absolute/path/to/bareos-mcp-server/target/release/bareos-mcp-server",
+    "args": [],
+    "env": {
+      "PATH": "/absolute/path/to/bareos-mcp-server:${PATH}"
+    }
+  }
+}
+```
+
+#### For Claude Desktop
+
+Add to your Claude Desktop config file:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "bareos": {
+      "command": "/absolute/path/to/bareos-mcp-server/target/release/bareos-mcp-server",
+      "args": []
+    }
+  }
+}
+```
+
+## Usage
+
+### With Claude Code
+
+```bash
+cd your-project
+claude
+```
+
+Then ask Claude naturally:
+- "Show me the last 10 backup jobs"
+- "What's the status of job 12345?"
+- "List all Bareos clients"
+- "How much storage is in the Full pool?"
+- "Show me volumes ready for pruning"
+
+### Available Tools
+
+| Tool | Description | Parameters |
+|------|-------------|------------|
+| `list_jobs` | List recent backup jobs | `limit` (optional, default: 50) |
+| `get_job_status` | Get detailed status of a job | `job_id` (required) |
+| `get_job_log` | View complete job log | `job_id` (required) |
+| `list_clients` | List all file daemon clients | None |
+| `list_filesets` | List backup filesets | None |
+| `list_pools` | List storage pools | None |
+| `list_volumes` | List volumes/media | `pool` (optional filter) |
+
+### Direct Testing
+
+Test the server without an MCP client:
+
+```bash
+# Initialize
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | ./target/release/bareos-mcp-server
+
+# List tools
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | ./target/release/bareos-mcp-server
+
+# Call a tool
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"list_jobs","arguments":{"limit":5}}}' | ./target/release/bareos-mcp-server
+```
+
+## Troubleshooting
+
+### bconsole not found
+```bash
+# Check if bconsole is in PATH
+which bconsole
+
+# Or create wrapper script (see Setup section)
+```
+
+### Permission denied
+```bash
+# Check bconsole config permissions
+ls -l /etc/bareos/bconsole.conf
+
+# May need to add user to bareos group
+sudo usermod -a -G bareos $USER
+```
+
+### Connection refused
+```bash
+# Test bconsole directly
+echo "version" | bconsole
+
+# Check Director is running
+systemctl status bareos-dir
+```
+
+### SSH issues (remote setup)
+```bash
+# Test SSH connection
+ssh your-host "bconsole" << EOF
+version
+quit
+EOF
+
+# Check SSH key authentication
+ssh -v your-host
+```
+
+## License
+
+Mozilla Public License 2.0 - see LICENSE file for details
