@@ -4,6 +4,8 @@
 !.github/
 !.releaserc.json
 
+bconsole
+
 # Rust
 /target/
 **/*.rs.bk

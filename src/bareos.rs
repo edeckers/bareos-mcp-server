@@ -39,12 +39,16 @@ impl BareosClient {
             .await
             .context("Failed to read bconsole output")?;
 
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+        let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+
+        // bconsole writes connection info to stderr and may return non-zero exit codes
+        // Only fail if we have no stdout and stderr contains actual error messages
+        if stdout.is_empty() && !output.status.success() {
             anyhow::bail!("bconsole command failed: {}", stderr);
         }
 
-        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        Ok(stdout)
     }
 
     pub async fn list_jobs(&self, limit: usize) -> Result<String> {
@@ -81,5 +85,10 @@ impl BareosClient {
             "list volumes".to_owned()
         };
         self.execute_command(&cmd).await
+    }
+
+    pub async fn list_files(&self, job_id: &str) -> Result<String> {
+        self.execute_command(&format!("list files jobid={}", job_id))
+            .await
     }
 }

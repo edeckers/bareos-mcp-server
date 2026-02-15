@@ -152,6 +152,7 @@ Example queries:
 | `list_jobs` | List recent backup jobs | `limit` (optional, default: 50) |
 | `get_job_status` | Get detailed status of a job | `job_id` (required) |
 | `get_job_log` | View complete job log | `job_id` (required) |
+| `list_files` | List files backed up in a job | `job_id` (required) |
 | `list_clients` | List all file daemon clients | None |
 | `list_filesets` | List backup filesets | None |
 | `list_pools` | List storage pools | None |

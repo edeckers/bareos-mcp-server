@@ -156,6 +156,20 @@ async fn handle_request(client: &BareosClient, request: Value) -> Value {
                         }
                     }
                 }),
+                json!({
+                    "name": "list_files",
+                    "description": "List all files backed up in a specific job",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "job_id": {
+                                "type": "string",
+                                "description": "The job ID to list files for"
+                            }
+                        },
+                        "required": ["job_id"]
+                    }
+                }),
             ];
 
             json!({
@@ -189,6 +203,10 @@ async fn handle_request(client: &BareosClient, request: Value) -> Value {
                 "list_volumes" => {
                     let pool = arguments["pool"].as_str();
                     client.list_volumes(pool).await
+                }
+                "list_files" => {
+                    let job_id = arguments["job_id"].as_str().unwrap_or("");
+                    client.list_files(job_id).await
                 }
                 _ => Err(anyhow::anyhow!("Unknown tool: {}", tool_name)),
             };
