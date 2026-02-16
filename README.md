@@ -149,7 +149,7 @@ Example queries:
 
 | Tool | Description | Parameters |
 |------|-------------|------------|
-| `list_jobs` | List recent backup jobs | `limit` (optional, default: 50) |
+| `list_jobs` | List recent backup jobs | `days` (optional), `hours` (optional), `last` (optional boolean) |
 | `get_job_status` | Get detailed status of a job | `job_id` (required) |
 | `get_job_log` | View complete job log | `job_id` (required) |
 | `list_files` | List files backed up in a job | `job_id` (required) |
@@ -169,8 +169,11 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' | ./target/rel
 # List tools
 echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | ./target/release/bareos-mcp-server
 
-# Call a tool
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"list_jobs","arguments":{"limit":5}}}' | ./target/release/bareos-mcp-server
+# Call a tool - list jobs from last 7 days
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"list_jobs","arguments":{"days":7}}}' | ./target/release/bareos-mcp-server
+
+# List the most recent jobs
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"list_jobs","arguments":{"last":true}}}' | ./target/release/bareos-mcp-server
 ```
 
 ## Troubleshooting

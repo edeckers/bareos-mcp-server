@@ -51,9 +51,16 @@ impl BareosClient {
         Ok(stdout)
     }
 
-    pub async fn list_jobs(&self, limit: usize) -> Result<String> {
-        self.execute_command(&format!("list jobs last={}", limit))
-            .await
+    pub async fn list_jobs(&self, days: Option<u32>, hours: Option<u32>, last: bool) -> Result<String> {
+        let mut cmd = "list jobs".to_string();
+        if let Some(d) = days {
+            cmd.push_str(&format!(" days={}", d));
+        } else if let Some(h) = hours {
+            cmd.push_str(&format!(" hours={}", h));
+        } else if last {
+            cmd.push_str(" last");
+        }
+        self.execute_command(&cmd).await
     }
 
     pub async fn get_job_status(&self, job_id: &str) -> Result<String> {

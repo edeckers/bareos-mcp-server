@@ -84,9 +84,17 @@ async fn handle_request(client: &BareosClient, request: Value) -> Value {
                     "inputSchema": {
                         "type": "object",
                         "properties": {
-                            "limit": {
+                            "days": {
                                 "type": "number",
-                                "description": "Maximum number of jobs to return (default: 50)"
+                                "description": "List jobs from the last N days (optional)"
+                            },
+                            "hours": {
+                                "type": "number",
+                                "description": "List jobs from the last N hours (optional)"
+                            },
+                            "last": {
+                                "type": "boolean",
+                                "description": "List the most recent jobs (optional)"
                             }
                         }
                     }
@@ -186,8 +194,10 @@ async fn handle_request(client: &BareosClient, request: Value) -> Value {
 
             let result = match tool_name {
                 "list_jobs" => {
-                    let limit = arguments["limit"].as_u64().unwrap_or(50);
-                    client.list_jobs(limit as usize).await
+                    let days = arguments["days"].as_u64().map(|n| n as u32);
+                    let hours = arguments["hours"].as_u64().map(|n| n as u32);
+                    let last = arguments["last"].as_bool().unwrap_or(false);
+                    client.list_jobs(days, hours, last).await
                 }
                 "get_job_status" => {
                     let job_id = arguments["job_id"].as_str().unwrap_or("");
