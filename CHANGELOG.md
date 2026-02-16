@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/edeckers/bareos-mcp-server/compare/v1.1.0...v1.1.1) (2026-02-16)
+
+### Bug Fixes
+
+* improve agent instructions for list_jobs ([05a1a7e](https://github.com/edeckers/bareos-mcp-server/commit/05a1a7e7f0b778d1db9170329cf571e847bb5b9c))
+* use job listing limits correctly ([dce255d](https://github.com/edeckers/bareos-mcp-server/commit/dce255dbef5cbb29e5be0bccdb563e5802428d38))
+
 ## [1.1.0](https://github.com/edeckers/bareos-mcp-server/compare/v1.0.0...v1.1.0) (2026-02-15)
 
 ### Features
