@@ -2,6 +2,20 @@ use anyhow::{Context, Result};
 use tokio::io::AsyncWriteExt;
 use tokio::process::Command;
 
+pub struct JobListParams {
+    pub job: Option<String>,
+    pub client: Option<String>,
+    pub jobstatus: Option<String>,
+    pub jobtype: Option<String>,
+    pub joblevel: Option<String>,
+    pub volume: Option<String>,
+    pub pool: Option<String>,
+    pub days: Option<u32>,
+    pub hours: Option<u32>,
+    pub last: bool,
+    pub count: bool,
+}
+
 pub struct BareosClient {
     bconsole_path: String,
 }
@@ -51,15 +65,44 @@ impl BareosClient {
         Ok(stdout)
     }
 
-    pub async fn list_jobs(&self, days: Option<u32>, hours: Option<u32>, last: bool) -> Result<String> {
+    pub async fn list_jobs(&self, params: JobListParams) -> Result<String> {
         let mut cmd = "list jobs".to_string();
-        if let Some(d) = days {
-            cmd.push_str(&format!(" days={}", d));
-        } else if let Some(h) = hours {
-            cmd.push_str(&format!(" hours={}", h));
-        } else if last {
+
+        // Pass all parameters to bconsole - it handles precedence and filtering
+        if let Some(job) = params.job {
+            cmd.push_str(&format!(" job={}", job));
+        }
+        if let Some(client) = params.client {
+            cmd.push_str(&format!(" client={}", client));
+        }
+        if let Some(jobstatus) = params.jobstatus {
+            cmd.push_str(&format!(" jobstatus={}", jobstatus));
+        }
+        if let Some(jobtype) = params.jobtype {
+            cmd.push_str(&format!(" jobtype={}", jobtype));
+        }
+        if let Some(joblevel) = params.joblevel {
+            cmd.push_str(&format!(" joblevel={}", joblevel));
+        }
+        if let Some(volume) = params.volume {
+            cmd.push_str(&format!(" volume={}", volume));
+        }
+        if let Some(pool) = params.pool {
+            cmd.push_str(&format!(" pool={}", pool));
+        }
+        if let Some(days) = params.days {
+            cmd.push_str(&format!(" days={}", days));
+        }
+        if let Some(hours) = params.hours {
+            cmd.push_str(&format!(" hours={}", hours));
+        }
+        if params.last {
             cmd.push_str(" last");
         }
+        if params.count {
+            cmd.push_str(" count");
+        }
+
         self.execute_command(&cmd).await
     }
 

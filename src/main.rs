@@ -5,7 +5,7 @@ use tracing::{error, info};
 
 mod bareos;
 
-use bareos::BareosClient;
+use bareos::{BareosClient, JobListParams};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -80,21 +80,53 @@ async fn handle_request(client: &BareosClient, request: Value) -> Value {
             let tools = vec![
                 json!({
                     "name": "list_jobs",
-                    "description": "List all backup jobs with their status and details",
+                    "description": "List Bareos jobs with optional filters. Returns ALL job types by default (backup, restore, verify, admin, copy, migration). IMPORTANT: When users ask about 'backups' or 'backup performance', filter by jobtype='B' to show only backup jobs, excluding verification and other operations. COMBINATION RULES: All filter parameters (job, client, jobstatus, jobtype, joblevel, volume, pool) can be freely combined with each other and with time/output parameters. Time parameters (days, hours) are mutually exclusive - if both provided, hours wins. Output parameters (last, count) are mutually exclusive - if both provided, count wins. Examples: {jobtype:'B',hours:24}, {client:'web',days:7}, {jobstatus:'f',hours:24,count:true}",
                     "inputSchema": {
                         "type": "object",
                         "properties": {
+                            "job": {
+                                "type": "string",
+                                "description": "Filter by job name. Can combine with any other parameters."
+                            },
+                            "client": {
+                                "type": "string",
+                                "description": "Filter by client name. Can combine with any other parameters."
+                            },
+                            "jobstatus": {
+                                "type": "string",
+                                "description": "Filter by job status: T (terminated/success), f (failed), R (running), C (created), A (canceled), E (error). Can combine with any other parameters."
+                            },
+                            "jobtype": {
+                                "type": "string",
+                                "description": "Filter by job type: B (backup), R (restore), V (verify), D (admin), C (copy), M (migration). Can combine with any other parameters."
+                            },
+                            "joblevel": {
+                                "type": "string",
+                                "description": "Filter by job level: F (full), I (incremental), D (differential). Can combine with any other parameters."
+                            },
+                            "volume": {
+                                "type": "string",
+                                "description": "Filter by volume name. Can combine with any other parameters."
+                            },
+                            "pool": {
+                                "type": "string",
+                                "description": "Filter by pool name. Can combine with any other parameters."
+                            },
                             "days": {
                                 "type": "number",
-                                "description": "List jobs from the last N days (optional)"
+                                "description": "Show jobs from last N days. Mutually exclusive with hours (hours wins if both given). Can combine with all filter and output parameters."
                             },
                             "hours": {
                                 "type": "number",
-                                "description": "List jobs from the last N hours (optional)"
+                                "description": "Show jobs from last N hours. Mutually exclusive with days (this takes precedence if both given). Can combine with all filter and output parameters."
                             },
                             "last": {
                                 "type": "boolean",
-                                "description": "List the most recent jobs (optional)"
+                                "description": "Show only the most recent run of each job (within the filter criteria). WARNING: If jobs ran multiple times in the time range, only the LAST run will be returned. Mutually exclusive with count (count wins if both given). Can combine with all filter and time parameters."
+                            },
+                            "count": {
+                                "type": "boolean",
+                                "description": "Show count of matching jobs instead of job details. Mutually exclusive with last (this takes precedence if both given). Can combine with all filter and time parameters."
                             }
                         }
                     }
@@ -194,10 +226,22 @@ async fn handle_request(client: &BareosClient, request: Value) -> Value {
 
             let result = match tool_name {
                 "list_jobs" => {
-                    let days = arguments["days"].as_u64().map(|n| n as u32);
-                    let hours = arguments["hours"].as_u64().map(|n| n as u32);
-                    let last = arguments["last"].as_bool().unwrap_or(false);
-                    client.list_jobs(days, hours, last).await
+                    // Pass all parameters through - bconsole handles precedence
+                    let params = JobListParams {
+                        job: arguments["job"].as_str().map(|s| s.to_string()),
+                        client: arguments["client"].as_str().map(|s| s.to_string()),
+                        jobstatus: arguments["jobstatus"].as_str().map(|s| s.to_string()),
+                        jobtype: arguments["jobtype"].as_str().map(|s| s.to_string()),
+                        joblevel: arguments["joblevel"].as_str().map(|s| s.to_string()),
+                        volume: arguments["volume"].as_str().map(|s| s.to_string()),
+                        pool: arguments["pool"].as_str().map(|s| s.to_string()),
+                        days: arguments["days"].as_u64().map(|n| n as u32),
+                        hours: arguments["hours"].as_u64().map(|n| n as u32),
+                        last: arguments["last"].as_bool().unwrap_or(false),
+                        count: arguments["count"].as_bool().unwrap_or(false),
+                    };
+
+                    client.list_jobs(params).await
                 }
                 "get_job_status" => {
                     let job_id = arguments["job_id"].as_str().unwrap_or("");
