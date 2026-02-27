@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/edeckers/bareos-mcp-server/compare/v1.1.1...v1.2.0) (2026-02-27)
+
+### Features
+
+* add resource readers for jobs, schedules ([aaa272d](https://github.com/edeckers/bareos-mcp-server/commit/aaa272d95960c5d772efe965de2c0e8bba6bb737))
+
 ## [1.1.1](https://github.com/edeckers/bareos-mcp-server/compare/v1.1.0...v1.1.1) (2026-02-16)
 
 ### Bug Fixes
