@@ -141,4 +141,19 @@ impl BareosClient {
         self.execute_command(&format!("list files jobid={}", job_id))
             .await
     }
+
+    pub async fn show_job(&self, job_name: &str) -> Result<String> {
+        self.execute_command(&format!("show job={}", job_name))
+            .await
+    }
+
+    pub async fn show_jobdefs(&self, jobdefs_name: &str) -> Result<String> {
+        self.execute_command(&format!("show jobdefs={}", jobdefs_name))
+            .await
+    }
+
+    pub async fn show_schedule(&self, schedule_name: &str) -> Result<String> {
+        self.execute_command(&format!("show schedule={}", schedule_name))
+            .await
+    }
 }

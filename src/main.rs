@@ -210,6 +210,48 @@ async fn handle_request(client: &BareosClient, request: Value) -> Value {
                         "required": ["job_id"]
                     }
                 }),
+                json!({
+                    "name": "show_job",
+                    "description": "Show the configured resource definition for a Bareos job. Returns the director's job resource properties including: enabled, schedule, client, fileset, storage, pool, level, type, priority, and more. Use this to inspect job configuration rather than runtime/historical data.",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "job_name": {
+                                "type": "string",
+                                "description": "The job name to show configuration for"
+                            }
+                        },
+                        "required": ["job_name"]
+                    }
+                }),
+                json!({
+                    "name": "show_jobdefs",
+                    "description": "Show the configured JobDefs resource definition. JobDefs are templates that jobs inherit from, defining default values for type, level, client, fileset, schedule, storage, pool, messages, priority, etc.",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "jobdefs_name": {
+                                "type": "string",
+                                "description": "The JobDefs name to show configuration for"
+                            }
+                        },
+                        "required": ["jobdefs_name"]
+                    }
+                }),
+                json!({
+                    "name": "show_schedule",
+                    "description": "Show the configured Schedule resource definition. Returns the run directives that define when jobs are executed, including timing, level overrides, and pool overrides.",
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": {
+                            "schedule_name": {
+                                "type": "string",
+                                "description": "The Schedule name to show configuration for"
+                            }
+                        },
+                        "required": ["schedule_name"]
+                    }
+                }),
             ];
 
             json!({
@@ -261,6 +303,18 @@ async fn handle_request(client: &BareosClient, request: Value) -> Value {
                 "list_files" => {
                     let job_id = arguments["job_id"].as_str().unwrap_or("");
                     client.list_files(job_id).await
+                }
+                "show_job" => {
+                    let job_name = arguments["job_name"].as_str().unwrap_or("");
+                    client.show_job(job_name).await
+                }
+                "show_jobdefs" => {
+                    let jobdefs_name = arguments["jobdefs_name"].as_str().unwrap_or("");
+                    client.show_jobdefs(jobdefs_name).await
+                }
+                "show_schedule" => {
+                    let schedule_name = arguments["schedule_name"].as_str().unwrap_or("");
+                    client.show_schedule(schedule_name).await
                 }
                 _ => Err(anyhow::anyhow!("Unknown tool: {}", tool_name)),
             };
