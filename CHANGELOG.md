@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/edeckers/bareos-mcp-server/compare/v1.2.0...v1.3.0) (2026-03-01)
+
+### Features
+
+* make bconsole path configurable through env ([91b3ab8](https://github.com/edeckers/bareos-mcp-server/commit/91b3ab86f9f781d2b26e52b7ff2b1d591652734d))
+
 ## [1.2.0](https://github.com/edeckers/bareos-mcp-server/compare/v1.1.1...v1.2.0) (2026-02-27)
 
 ### Features
