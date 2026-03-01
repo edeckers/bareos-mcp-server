@@ -30,7 +30,9 @@ impl Default for BareosClient {
 
 impl BareosClient {
     pub fn new() -> Self {
-        Self::default()
+        let bconsole_path =
+            std::env::var("BAREOS_BCONSOLE_PATH").unwrap_or_else(|_| "bconsole".to_string());
+        Self { bconsole_path }
     }
 
     async fn execute_command(&self, command: &str) -> Result<String> {

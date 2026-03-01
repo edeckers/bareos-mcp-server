@@ -48,7 +48,15 @@ The binary will be at: `target/release/bareos-mcp-server`
 
 ### 2. Configure bconsole Access
 
-The MCP server calls `bconsole` from your PATH. You have several options:
+The MCP server calls `bconsole` to interact with the Bareos Director. By default it looks for `bconsole` in your PATH, but you can set the `BAREOS_BCONSOLE_PATH` environment variable to specify an absolute path to the binary or wrapper script:
+
+```bash
+export BAREOS_BCONSOLE_PATH=/usr/sbin/bconsole
+```
+
+You can also pass this through your MCP client config (see step 3).
+
+You have several options:
 
 #### Option A: Local bconsole (Direct Access)
 
@@ -105,7 +113,7 @@ Example config:
     "command": "/absolute/path/to/bareos-mcp-server/target/release/bareos-mcp-server",
     "args": [],
     "env": {
-      "PATH": "/absolute/path/to/bareos-mcp-server:${PATH}"
+      "BAREOS_BCONSOLE_PATH": "/absolute/path/to/bconsole"
     }
   }
 }
@@ -123,7 +131,10 @@ Add to your Claude Desktop config file:
   "mcpServers": {
     "bareos": {
       "command": "/absolute/path/to/bareos-mcp-server/target/release/bareos-mcp-server",
-      "args": []
+      "args": [],
+      "env": {
+        "BAREOS_BCONSOLE_PATH": "/absolute/path/to/bconsole"
+      }
     }
   }
 }
