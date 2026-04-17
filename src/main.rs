@@ -17,24 +17,6 @@ async fn main() -> Result<()> {
 
     info!("Bareos MCP Server starting...");
 
-    // Send server info on startup
-    let server_info = json!({
-        "jsonrpc": "2.0",
-        "id": null,
-        "result": {
-            "protocolVersion": "2024-11-05",
-            "capabilities": {
-                "tools": {}
-            },
-            "serverInfo": {
-                "name": "bareos-mcp-server",
-                "version": "0.1.0"
-            }
-        }
-    });
-    writeln!(stdout, "{}", server_info)?;
-    stdout.flush()?;
-
     for line in stdin.lock().lines() {
         let line = line?;
         if line.trim().is_empty() {
@@ -49,19 +31,23 @@ async fn main() -> Result<()> {
             }
         };
 
-        let response = handle_request(&client, request).await;
-        writeln!(stdout, "{}", serde_json::to_string(&response)?)?;
-        stdout.flush()?;
+        if let Some(response) = handle_request(&client, request).await {
+            writeln!(stdout, "{}", serde_json::to_string(&response)?)?;
+            stdout.flush()?;
+        }
     }
 
     Ok(())
 }
 
-async fn handle_request(client: &BareosClient, request: Value) -> Value {
+async fn handle_request(client: &BareosClient, request: Value) -> Option<Value> {
+    // JSON-RPC notifications omit "id" and MUST NOT receive a response.
+    request.get("id")?;
+
     let method = request["method"].as_str().unwrap_or("");
     let id = request["id"].clone();
 
-    match method {
+    Some(match method {
         "initialize" => json!({
             "jsonrpc": "2.0",
             "id": id,
@@ -350,5 +336,5 @@ async fn handle_request(client: &BareosClient, request: Value) -> Value {
                 "message": format!("Method not found: {}", method)
             }
         }),
-    }
+    })
 }
