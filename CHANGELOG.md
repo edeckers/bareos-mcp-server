@@ -1,3 +1,9 @@
+## [1.3.1](https://github.com/edeckers/bareos-mcp-server/compare/v1.3.0...v1.3.1) (2026-04-17)
+
+### Bug Fixes
+
+* ditch unsollicited initialization message ([24c252d](https://github.com/edeckers/bareos-mcp-server/commit/24c252dcdb3ef11bb29f190abad636afdbacd67f))
+
 ## [1.3.0](https://github.com/edeckers/bareos-mcp-server/compare/v1.2.0...v1.3.0) (2026-03-01)
 
 ### Features
